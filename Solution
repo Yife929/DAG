@@ -1,0 +1,65 @@
+import java.util.*;
+
+class Vertex {
+    long id;
+    List<Edge> outgoingEdges = new ArrayList<>();
+    int longestPath = 0;
+
+    public Vertex(long id) {
+        this.id = id;
+    }
+}
+
+class Edge {
+    Vertex from;
+    Vertex to;
+
+    public Edge(Vertex from, Vertex to) {
+        this.from = from;
+        this.to = to;
+        from.outgoingEdges.add(this);
+    }
+}
+
+public class DAGLongestPath {
+    public static int longestPathFromVertex(Vertex startVertex) {
+        if (startVertex == null) {
+            throw new NullPointerException("Start vertex cannot be null");
+        }
+
+        Map<Vertex, Integer> longestPaths = new HashMap<>();
+        return longestPathFromVertex(startVertex, longestPaths);
+    }
+
+    private static int longestPathFromVertex(Vertex vertex, Map<Vertex, Integer> longestPaths) {
+        if (longestPaths.containsKey(vertex)) {
+            return longestPaths.get(vertex);
+        }
+
+        int longestPath = 0;
+        for (Edge edge : vertex.outgoingEdges) {
+            int pathLength = longestPathFromVertex(edge.to, longestPaths) + 1;
+            longestPath = Math.max(longestPath, pathLength);
+        }
+
+        longestPaths.put(vertex, longestPath);
+        return longestPath;
+    }
+
+    public static void main(String[] args) {
+        // Example usage:
+        Vertex v1 = new Vertex(1);
+        Vertex v2 = new Vertex(2);
+        Vertex v3 = new Vertex(3);
+        Vertex v4 = new Vertex(4);
+        Vertex v5 = new Vertex(5);
+
+        new Edge(v1, v2);
+        new Edge(v1, v3);
+        new Edge(v2, v4);
+        new Edge(v3, v4);
+        new Edge(v4, v5);
+
+        System.out.println("Longest path from vertex 1: " + longestPathFromVertex(v1));
+    }
+}
